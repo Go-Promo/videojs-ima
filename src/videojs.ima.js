@@ -378,6 +378,7 @@
     this.onContentPauseRequested_ = function(adEvent) {
       this.adsActive = true;
       this.adPlaying = true;
+      this.contentSource = this.player.currentSrc();
       this.player.off('ended', this.localContentEndedListener);
       if (adEvent.getAd().getAdPodInfo().getPodIndex() != -1) {
         // Skip this call for post-roll ads
@@ -432,6 +433,9 @@
       this.allAdsCompleted = true;
       this.adContainerDiv.style.display = 'none';
       if (this.contentComplete == true) {
+        if (this.contentPlayer.src != this.contentSource) {
+          this.player.src(this.contentSource);
+        }
         for (var index in this.contentAndAdsEndedListeners) {
           this.contentAndAdsEndedListeners[index]();
         }
@@ -1248,6 +1252,12 @@
       * Listener to be called to trigger manual ad break playback.
       */
     this.adBreakReadyListener = undefined;
+
+    /**
+     * Stores the content source so we can re-populate it manually after a
+     * post-roll on iOS.
+     */
+    this.contentSource = '';
 
     /**
      * Local content ended listener for contentComplete.
