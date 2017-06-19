@@ -1385,6 +1385,10 @@
       google.ima.settings.setLocale(this.settings['locale']);
     }
 
+    if (this.settings['disableFlashAds']) {
+      google.ima.settings.setDisableFlashAds(this.settings['disableFlashAds']);
+    }
+
     createAdContainer_();
     this.adsLoader = new google.ima.AdsLoader(this.adDisplayContainer);
 
@@ -1430,5 +1434,7 @@
     });
   };
 
-  vjs.plugin('ima', init);
-}(window.videojs));
+  // Cross-compatibility for Video.js 5 and 6.
+  var registerPlugin = videojs.registerPlugin || videojs.plugin;
+  registerPlugin('ima', init);
+});
