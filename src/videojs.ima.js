@@ -127,8 +127,23 @@
           hideAdControls_,
           false);
       createControls_();
+      createResumeButton_();
       this.adDisplayContainer =
           new google.ima.AdDisplayContainer(this.adContainerDiv, this.contentPlayer);
+    }.bind(this);
+
+    /**
+     * Creates the resume button for the ad.
+     * @private
+     */
+    var createResumeButton_ = function() {
+      this.resumeDiv = document.createElement('div');
+      assignControlAttributes_(this.resumeDiv, 'ima-resume-div');
+      this.resumeDiv.addEventListener(
+          'click',
+          onAdResumeClick_,
+          false);
+      this.adContainerDiv.appendChild(this.resumeDiv);
     }.bind(this);
 
     /**
@@ -295,7 +310,7 @@
     this.start = function() {
       window.console.log(
           'WARNING: player.ima.start is deprecated. Use ' +
-              'player.ima.startFromReadyCallback instead.');
+          'player.ima.startFromReadyCallback instead.');
     };
 
     /**
@@ -452,7 +467,7 @@
      * @param {google.ima.AdEvent} adEvent The AdEvent thrown by the AdsManager.
      * @private
      */
-   var onAdLoaded_ = function(adEvent) {
+    var onAdLoaded_ = function(adEvent) {
       if (!adEvent.getAd().isLinear()) {
         this.player.play();
       }
@@ -473,7 +488,7 @@
         removeClass_(this.adContainerDiv, 'bumpable-ima-ad-container');
       } else {
         // Bump container when controls are shown
-       addClass_(this.adContainerDiv, 'bumpable-ima-ad-container');
+        addClass_(this.adContainerDiv, 'bumpable-ima-ad-container');
       }
       // For non-linear ads that show after a linear ad.
       this.adContainerDiv.style.display = 'block';
@@ -542,6 +557,28 @@
     }.bind(this);
 
     /**
+     * Show resume button
+     */
+    var showResumeButton = function() {
+      addClass_(this.resumeDiv, 'ima-active');
+    }.bind(this);
+
+    /**
+     * Hide resume button
+     */
+    var hideResumeButton = function() {
+      removeClass_(this.resumeDiv, 'ima-active');
+    }.bind(this);
+
+    /**
+     * Listener for clicks on the resume button during ad paused.
+     * @private
+     */
+    var onAdResumeClick_ = function() {
+      onAdPlayPauseClick_();
+    }.bind(this);
+
+    /**
      * Hides the ad controls on mouseout.
      * @private
      */
@@ -588,10 +625,12 @@
     var onAdPlayPauseClick_ = function() {
       if (this.adPlaying) {
         showPauseButton();
+        showResumeButton();
         this.adsManager.pause();
         this.adPlaying = false;
       } else {
         showPlayButton();
+        hideResumeButton();
         this.adsManager.resume();
         this.adPlaying = true;
       }
@@ -625,8 +664,8 @@
      * @private
      */
     var onAdVolumeSliderMouseDown_ = function() {
-       document.addEventListener('mouseup', onMouseUp_, false);
-       document.addEventListener('mousemove', onMouseMove_, false);
+      document.addEventListener('mouseup', onMouseUp_, false);
+      document.addEventListener('mousemove', onMouseMove_, false);
     };
 
     /* Mouse movement listener used for volume slider.
@@ -651,7 +690,7 @@
     var setVolumeSlider_ = function(event) {
       var percent =
           (event.clientX - this.sliderDiv.getBoundingClientRect().left) /
-              this.sliderDiv.offsetWidth;
+          this.sliderDiv.offsetWidth;
       percent *= 100;
       //Bounds value 0-100 if mouse is outside slider region.
       percent = Math.min(Math.max(percent, 0), 100);
@@ -829,7 +868,7 @@
     this.setContent = function(contentSrc, adTag, playOnLoad) {
       window.console.log(
           'WARNING: player.ima.setContent is deprecated. Use ' +
-              'player.ima.setContentWithAdTag instead.');
+          'player.ima.setContentWithAdTag instead.');
       this.setContentWithAdTag(contentSrc, adTag, playOnLoad);
     }.bind(this);
 
@@ -1110,6 +1149,11 @@
     this.fullscreenDiv;
 
     /**
+     * Div used to display ad resume button.
+     */
+    this.resumeDiv;
+
+    /**
      * IMA SDK AdDisplayContainer.
      */
     this.adDisplayContainer;
@@ -1185,7 +1229,7 @@
     /**
      * True if ALL_ADS_COMPLETED has fired, false until then.
      */
-     this.allAdsCompleted = false;
+    this.allAdsCompleted = false;
 
     /**
      * Handle to interval that repeatedly updates current time.
@@ -1268,9 +1312,9 @@
      */
     this.contentAndAdsEndedListeners = [];
 
-     /**
-      * Listener to be called to trigger manual ad break playback.
-      */
+    /**
+     * Listener to be called to trigger manual ad break playback.
+     */
     this.adBreakReadyListener = undefined;
 
     /**
@@ -1415,13 +1459,13 @@
     this.adsLoader.getSettings().setAutoPlayAdBreaks(this.autoPlayAdBreaks);
 
     this.adsLoader.addEventListener(
-      google.ima.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED,
-      onAdsManagerLoaded_,
-      false);
+        google.ima.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED,
+        onAdsManagerLoaded_,
+        false);
     this.adsLoader.addEventListener(
-      google.ima.AdErrorEvent.Type.AD_ERROR,
-      onAdsLoaderError_,
-      false);
+        google.ima.AdErrorEvent.Type.AD_ERROR,
+        onAdsLoaderError_,
+        false);
 
     if (!readyCallback) {
       readyCallback = this.startFromReadyCallback;
