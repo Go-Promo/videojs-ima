@@ -477,6 +477,7 @@
       }
       // For non-linear ads that show after a linear ad.
       this.adContainerDiv.style.display = 'block';
+      this.player.trigger('ads-ad-started');
     }.bind(this);
 
     /**
@@ -1304,7 +1305,8 @@
     }.bind(this);
 
     this.playerDisposedListener = function(){
-      this.contentEndedListeners, this.contentAndAdsEndedListeners = [], [];
+      this.contentEndedListeners = [];
+      this.contentAndAdsEndedListeners = [];
       this.contentComplete = true;
       this.player.off('ended', this.localContentEndedListener);
 
@@ -1387,6 +1389,10 @@
 
     if (this.settings['disableFlashAds']) {
       google.ima.settings.setDisableFlashAds(this.settings['disableFlashAds']);
+    }
+
+    if (this.settings['disableCustomPlaybackForIOS10Plus']) {
+      google.ima.settings.setDisableCustomPlaybackForIOS10Plus(this.settings['disableCustomPlaybackForIOS10Plus']);
     }
 
     createAdContainer_();

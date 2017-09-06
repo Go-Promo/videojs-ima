@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "video.js": "~5.3",
-    "videojs-contrib-ads": "~4.2.8"
+    "videojs-contrib-ads": "~5.0.3"
   },
   "repository": {
     "type": "git",
